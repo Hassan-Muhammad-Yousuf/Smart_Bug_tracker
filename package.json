@@ -1,0 +1,19 @@
+{
+  "name": "smart-bug-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A smart bug tracker with code analysis capabilities",
+  "main": "index.js",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "start": "python app.py",
+    "lint": "eslint ."
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^8.38.0"
+  }
+}
+

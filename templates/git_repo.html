@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h1>Git Repository Analysis</h1>
+        <p class="lead">Analyze code from a Git repository for comprehensive bug tracking</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                Connect Repository
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label for="repo_url" class="form-label">Git Repository URL</label>
+                        <input type="text" class="form-control" id="repo_url" name="repo_url" 
+                               placeholder="https://github.com/username/repository.git" required>
+                        <div class="form-text">
+                            Enter the HTTPS URL of the Git repository you want to analyze
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-git"></i> Clone and Analyze
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                How It Works
+            </div>
+            <div class="card-body">
+                <ol class="list-group list-group-numbered">
+                    <li class="list-group-item">
+                        <strong>Clone Repository</strong>: We'll clone your Git repository to our server
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Detect Languages</strong>: We'll automatically detect the programming languages used
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Analyze Code</strong>: We'll run appropriate static analyzers for each language
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Categorize Bugs</strong>: Our AI will categorize and prioritize the detected bugs
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Generate Report</strong>: View a comprehensive report of all issues found
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

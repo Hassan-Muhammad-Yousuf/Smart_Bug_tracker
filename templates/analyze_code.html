@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h1>Analyze Code</h1>
+        <p class="lead">Paste your code for analysis and bug detection</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Code Input
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label for="language" class="form-label">Select Language</label>
+                        <select class="form-select" id="language" name="language" required>
+                            <option value="">Select a language</option>
+                            <option value="python">Python</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="java">Java</option>
+                            <option value="cpp">C++</option>
+                            <option value="go">Go</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="code" class="form-label">Paste Your Code</label>
+                        <textarea class="form-control" id="code" name="code" rows="15" required></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Analyze Code
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

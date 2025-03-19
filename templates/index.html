@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Bug Tracker</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #4a6baf;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            background-color: var(--primary-color);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+        }
+        
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            font-weight: bold;
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+        
+        .severity-badge {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .severity-critical {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .severity-high {
+            background-color: #fd7e14;
+            color: white;
+        }
+        
+        .severity-medium {
+            background-color: #ffc107;
+            color: black;
+        }
+        
+        .severity-low {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .code-block {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        
+        .code-line {
+            display: block;
+            counter-increment: line;
+        }
+        
+        .code-line:before {
+            content: counter(line);
+            display: inline-block;
+            width: 2em;
+            padding-right: 1em;
+            margin-right: 1em;
+            text-align: right;
+            color: #999;
+            border-right: 1px solid #ddd;
+        }
+        
+        .code-line.highlight {
+            background-color: #ffe0e0;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            background-color: #f5f5f5;
+            text-align: center;
+        }
+        
+        .dashboard-stat {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .dashboard-stat .number {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        
+        .dashboard-stat .label {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+        
+        .chart-container {
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-bug"></i> Smart Bug Tracker
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/upload">Upload Code</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/analyze-code">Analyze Code</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/git-repo">Git Repository</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/bugs">All Bugs</a>
+                    </li>
+                </ul>
+                <form class="d-flex" action="/search" method="get">
+                    <input class="form-control me-2" type="search" placeholder="Search bugs..." name="q" aria-label="Search">
+                    <button class="btn btn-outline-light" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center mb-5">
+                <h1 class="display-4">Smart Bug Tracker</h1>
+                <p class="lead">
+                    An intelligent bug-tracking system that leverages AI to automatically detect, categorize, and prioritize bugs in your code.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-upload fs-1 text-primary mb-3"></i>
+                        <h5 class="card-title">Upload Code</h5>
+                        <p class="card-text">Upload your code files for analysis and bug detection.</p>
+                        <a href="/upload" class="btn btn-primary">Upload Code</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-code-slash fs-1 text-primary mb-3"></i>
+                        <h5 class="card-title">Analyze Code</h5>
+                        <p class="card-text">Paste your code directly for instant analysis.</p>
+                        <a href="/analyze-code" class="btn btn-primary">Analyze Code</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-git fs-1 text-primary mb-3"></i>
+                        <h5 class="card-title">Git Repository</h5>
+                        <p class="card-text">Analyze code from a Git repository for comprehensive bug tracking.</p>
+                        <a href="/git-repo" class="btn btn-primary">Connect Repository</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-graph-up fs-1 text-primary mb-3"></i>
+                        <h5 class="card-title">Dashboard</h5>
+                        <p class="card-text">View bug statistics, trends, and insights from your codebase.</p>
+                        <a href="/dashboard" class="btn btn-primary">View Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        Supported Languages
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col">
+                                <i class="bi bi-filetype-py fs-1"></i>
+                                <p>Python</p>
+                            </div>
+                            <div class="col">
+                                <i class="bi bi-filetype-js fs-1"></i>
+                                <p>JavaScript</p>
+                            </div>
+                            <div class="col">
+                                <i class="bi bi-filetype-java fs-1"></i>
+                                <p>Java</p>
+                            </div>
+                            <div class="col">
+                                <i class="bi bi-filetype-cpp fs-1"></i>
+                                <p>C++</p>
+                            </div>
+                            <div class="col">
+                                <i class="bi bi-filetype-go fs-1"></i>
+                                <p>Go</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        Features
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                Automated bug detection using static code analysis and machine learning
+                            </li>
+                            <li class="list-group-item">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                Categorization of bugs into severity levels (critical, high, medium, low)
+                            </li>
+                            <li class="list-group-item">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                Bug tracking with status management (open, in progress, fixed, closed)
+                            </li>
+                            <li class="list-group-item">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                Context-aware suggestions for bug fixes with code examples
+                            </li>
+                            <li class="list-group-item">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                Integration with version control systems like Git for seamless tracking
+                            </li>
+                            <li class="list-group-item">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                Visual dashboard for bug trends and resolution progress
+                            </li>
+                            <li class="list-group-item">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                Bug assignment, comments, and history tracking
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer mt-auto py-3">
+        <div class="container">
+            <span class="text-muted">Smart Bug Tracker &copy; 2023</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>
+

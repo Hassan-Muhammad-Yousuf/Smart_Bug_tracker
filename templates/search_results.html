@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h1>Search Results</h1>
+        <p class="lead">Results for "{{ query }}"</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Found {{ results|length }} result(s)
+            </div>
+            <div class="card-body">
+                {% if results %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Line</th>
+                                <th>Language</th>
+                                <th>Severity</th>
+                                <th>Status</th>
+                                <th>Message</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results %}
+                            <tr>
+                                <td>{{ result.file_path }}</td>
+                                <td>{{ result.line_number }}</td>
+                                <td>{{ result.language }}</td>
+                                <td>
+                                    <span class="severity-badge severity-{{ result.severity }}">
+                                        {{ result.severity }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ result.status }}</span>
+                                </td>
+                                <td>{{ result.message }}</td>
+                                <td>
+                                    <a href="/bug/{{ result.id }}" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    No results found for "{{ query }}".
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between">
+            <a href="/" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

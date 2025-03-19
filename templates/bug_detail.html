@@ -1,0 +1,252 @@
+{% extends "layout.html" %}
+
+{% block title %}Bug Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Bug #{{ bug.id }}</h5>
+                    <span class="badge bg-{{ bug.severity }}">{{ bug.severity }}</span>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">{{ bug.file_path }}</h6>
+                    <p class="card-text">{{ bug.message }}</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Language:</strong> {{ bug.language }}</p>
+                            <p><strong>Type:</strong> {{ bug.type }}</p>
+                            <p><strong>Line:</strong> {{ bug.line_number }}</p>
+                            <p><strong>Column:</strong> {{ bug.column_number }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Status:</strong> <span class="badge bg-{{ bug.status }}">{{ bug.status }}</span></p>
+                            <p><strong>Assigned to:</strong> {{ bug.assigned_to_name or 'Unassigned' }}</p>
+                            <p><strong>Created:</strong> {{ bug.created_at }}</p>
+                            <p><strong>Updated:</strong> {{ bug.updated_at }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fix suggestions -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">AI Fix Suggestion</h5>
+                    {% set specific_fixes = fixes|selectattr('bug_id', 'equalto', bug.id)|list %}
+                    {% if specific_fixes %}
+                        <span class="badge bg-success">{{ specific_fixes|length }} suggestion(s)</span>
+                    {% else %}
+                        <span class="badge bg-secondary">No suggestions</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% set specific_fixes = fixes|selectattr('bug_id', 'equalto', bug.id)|list %}
+                    {% if specific_fixes %}
+                        <div class="accordion" id="fixesAccordion">
+                            {% for fix in specific_fixes %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{ fix.id }}">
+                                        <button class="accordion-button {% if loop.index > 1 %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ fix.id }}" aria-expanded="{% if loop.index == 1 %}true{% else %}false{% endif %}" aria-controls="collapse{{ fix.id }}">
+                                            AI Fix Suggestion
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ fix.id }}" class="accordion-collapse collapse {% if loop.index == 1 %}show{% endif %}" aria-labelledby="heading{{ fix.id }}" data-bs-parent="#fixesAccordion">
+                                        <div class="accordion-body">
+                                            <p>{{ fix.suggestion|nl2br|safe }}</p>
+                                            {% if fix.code_example %}
+                                                <div class="code-block">
+                                                    <pre><code class="language-{{ bug.language }}">{{ fix.code_example }}</code></pre>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>No AI fix suggestions available for this specific bug.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Comments -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Comments</h5>
+                </div>
+                <div class="card-body">
+                    {% if comments %}
+                        <div class="comments-list">
+                            {% for comment in comments %}
+                                <div class="comment mb-3">
+                                    <div class="d-flex">
+                                        <div class="comment-avatar me-2">
+                                            <div class="avatar-placeholder">{{ comment.username[0] }}</div>
+                                        </div>
+                                        <div class="comment-content">
+                                            <div class="comment-header">
+                                                <span class="comment-author">{{ comment.username }}</span>
+                                                <span class="comment-date text-muted">{{ comment.created_at }}</span>
+                                            </div>
+                                            <div class="comment-body">
+                                                {{ comment.comment|nl2br|safe }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>No comments yet.</p>
+                    {% endif %}
+
+                    <form action="{{ url_for('add_comment', bug_id=bug.id) }}" method="post" class="mt-3">
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">Add a comment</label>
+                            <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Update bug -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Update Bug</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('update_bug', bug_id=bug.id) }}" method="post">
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="open" {% if bug.status == 'open' %}selected{% endif %}>Open</option>
+                                <option value="in_progress" {% if bug.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                                <option value="fixed" {% if bug.status == 'fixed' %}selected{% endif %}>Fixed</option>
+                                <option value="closed" {% if bug.status == 'closed' %}selected{% endif %}>Closed</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="severity" class="form-label">Severity</label>
+                            <select class="form-select" id="severity" name="severity">
+                                <option value="critical" {% if bug.severity == 'critical' %}selected{% endif %}>Critical</option>
+                                <option value="high" {% if bug.severity == 'high' %}selected{% endif %}>High</option>
+                                <option value="medium" {% if bug.severity == 'medium' %}selected{% endif %}>Medium</option>
+                                <option value="low" {% if bug.severity == 'low' %}selected{% endif %}>Low</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="assigned_to" class="form-label">Assign to</label>
+                            <select class="form-select" id="assigned_to" name="assigned_to">
+                                <option value="none">Unassigned</option>
+                                {% for user in users %}
+                                    <option value="{{ user.id }}" {% if bug.assigned_to == user.id %}selected{% endif %}>{{ user.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tags -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Tags</h5>
+                </div>
+                <div class="card-body">
+                    <div class="tags-list mb-3">
+                        {% if tags %}
+                            {% for tag in tags %}
+                                <div class="tag-item" style="background-color: {{ tag.color }};">
+                                    {{ tag.name }}
+                                    <form action="{{ url_for('remove_tag', bug_id=bug.id, tag_id=tag.id) }}" method="post" class="d-inline">
+                                        <button type="submit" class="btn-close btn-close-white tag-remove" aria-label="Remove"></button>
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p>No tags assigned.</p>
+                        {% endif %}
+                    </div>
+
+                    <form action="{{ url_for('add_tag', bug_id=bug.id) }}" method="post">
+                        <div class="mb-3">
+                            <label for="tag_id" class="form-label">Add a tag</label>
+                            <select class="form-select" id="tag_id" name="tag_id" required>
+                                <option value="">Select a tag</option>
+                                {% for tag in all_tags %}
+                                    <option value="{{ tag.id }}">{{ tag.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Tag</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- History -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">History</h5>
+                </div>
+                <div class="card-body">
+                    {% if history %}
+                        <div class="history-list">
+                            {% for entry in history %}
+                                <div class="history-item">
+                                    <div class="history-header">
+                                        <span class="history-user">{{ entry.username or 'System' }}</span>
+                                        <span class="history-date text-muted">{{ entry.created_at }}</span>
+                                    </div>
+                                    <div class="history-content">
+                                        Changed <strong>{{ entry.field_changed }}</strong>
+                                        {% if entry.old_value %}
+                                            from <span class="history-old">{{ entry.old_value }}</span>
+                                        {% endif %}
+                                        {% if entry.new_value %}
+                                            to <span class="history-new">{{ entry.new_value }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>No history available.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Delete bug -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Delete Bug</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-danger">Warning: This action cannot be undone.</p>
+                    <form action="{{ url_for('delete_bug', bug_id=bug.id) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this bug? This action cannot be undone.');">
+                        <button type="submit" class="btn btn-danger">Delete Bug</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize code highlighting
+        document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightElement(block);
+        });
+    });
+</script>
+{% endblock %}
+

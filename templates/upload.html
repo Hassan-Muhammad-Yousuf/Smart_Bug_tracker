@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h1>Upload Code</h1>
+        <p class="lead">Upload your code files for analysis and bug detection</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                Upload File
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Select a file to analyze</label>
+                        <input type="file" class="form-control" id="file" name="file" required>
+                        <div class="form-text">
+                            Supported languages: Python, JavaScript, Java, C++, Go
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-upload"></i> Upload and Analyze
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                Supported File Types
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Language</th>
+                                <th>File Extensions</th>
+                                <th>Analyzers Used</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Python</td>
+                                <td>.py</td>
+                                <td>Pylint, Flake8</td>
+                            </tr>
+                            <tr>
+                                <td>JavaScript</td>
+                                <td>.js, .jsx, .ts, .tsx</td>
+                                <td>ESLint</td>
+                            </tr>
+                            <tr>
+                                <td>Java</td>
+                                <td>.java</td>
+                                <td>PMD, SpotBugs</td>
+                            </tr>
+                            <tr>
+                                <td>C++</td>
+                                <td>.cpp, .cc, .cxx, .h, .hpp</td>
+                                <td>Cppcheck</td>
+                            </tr>
+                            <tr>
+                                <td>Go</td>
+                                <td>.go</td>
+                                <td>golangci-lint, go vet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

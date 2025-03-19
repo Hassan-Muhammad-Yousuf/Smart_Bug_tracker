@@ -1,0 +1,51 @@
+linters:
+  enable-all: true
+  disable:
+    - exhaustivestruct  # Too strict
+    - interfacer       # Deprecated
+    - maligned         # Deprecated
+    - scopelint        # Deprecated
+    - golint          # Deprecated
+    - varcheck        # Deprecated
+    - deadcode        # Deprecated
+    - structcheck     # Deprecated
+    - nosnakecase     # Too strict
+    - depguard        # Too strict
+    - testpackage     # Not needed
+    - gochecknoglobals # Too strict
+
+run:
+  deadline: 5m
+  skip-dirs:
+    - vendor
+    - test
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+output:
+  format: line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  govet:
+    check-shadowing: true
+    enable-all: true
+  staticcheck:
+    checks: ["all"]
+  gosec:
+    severity: "low"
+    confidence: "low"
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style 

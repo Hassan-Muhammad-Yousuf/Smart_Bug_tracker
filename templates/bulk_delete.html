@@ -1,0 +1,109 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h1>Bulk Delete Bugs</h1>
+        <p class="lead">Delete multiple bugs at once</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Select Bugs to Delete
+            </div>
+            <div class="card-body">
+                <form method="post" action="/bugs/bulk-delete">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="selectAll">
+                                            <label class="form-check-label" for="selectAll">Select All</label>
+                                        </div>
+                                    </th>
+                                    <th>File</th>
+                                    <th>Line</th>
+                                    <th>Severity</th>
+                                    <th>Status</th>
+                                    <th>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for bug in bugs %}
+                                <tr>
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input bug-checkbox" type="checkbox" name="bug_ids" value="{{ bug.id }}" id="bug{{ bug.id }}">
+                                            <label class="form-check-label" for="bug{{ bug.id }}"></label>
+                                        </div>
+                                    </td>
+                                    <td>{{ bug.file_path }}</td>
+                                    <td>{{ bug.line_number }}</td>
+                                    <td>
+                                        <span class="severity-badge severity-{{ bug.severity }}">
+                                            {{ bug.severity }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ bug.status }}</span>
+                                    </td>
+                                    <td>{{ bug.message }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-3">
+                        <a href="/bugs" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Bug List
+                        </a>
+                        <button type="submit" class="btn btn-danger" id="deleteSelectedBtn" disabled>
+                            <i class="bi bi-trash"></i> Delete Selected Bugs
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAllCheckbox = document.getElementById('selectAll');
+        const bugCheckboxes = document.querySelectorAll('.bug-checkbox');
+        const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+        
+        // Function to update delete button state
+        function updateDeleteButtonState() {
+            const checkedCount = document.querySelectorAll('.bug-checkbox:checked').length;
+            deleteSelectedBtn.disabled = checkedCount === 0;
+        }
+        
+        // Select all checkbox
+        selectAllCheckbox.addEventListener('change', function() {
+            bugCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            updateDeleteButtonState();
+        });
+        
+        // Individual checkboxes
+        bugCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                // Update "Select All" checkbox
+                selectAllCheckbox.checked = [...bugCheckboxes].every(cb => cb.checked);
+                updateDeleteButtonState();
+            });
+        });
+    });
+</script>
+{% endblock %}
+

@@ -1,0 +1,39 @@
+Flask
+Werkzeug
+python-magic
+scikit-learn
+numpy
+pylint
+flake8
+python-dateutil
+requests
+
+
+
+
+pycodestyle
+astroid
+gitpython
+
+
+pandas
+joblib
+openai
+python-dotenv
+
+
+
+# # JavaScript analyzer
+# brew install node
+# npm install -g eslint
+
+# # Java analyzers
+# brew install pmd
+# brew install spotbugs
+
+# # C++ analyzer
+# brew install cppcheck
+
+# # Go analyzer
+# brew install go
+# brew install golangci-lint

@@ -1,0 +1,126 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h1>Code Analysis Results</h1>
+        <p class="lead">Bugs detected in your code</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Summary
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <div class="h1">{{ results|length }}</div>
+                        <div>Total Issues</div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="progress mb-2" style="height: 25px;">
+                            {% set critical_count = results|selectattr('severity', 'equalto', 'critical')|list|length %}
+                            {% set high_count = results|selectattr('severity', 'equalto', 'high')|list|length %}
+                            {% set medium_count = results|selectattr('severity', 'equalto', 'medium')|list|length %}
+                            {% set low_count = results|selectattr('severity', 'equalto', 'low')|list|length %}
+                            
+                            {% if critical_count > 0 %}
+                            <div class="progress-bar bg-danger" style="width: {{ (critical_count / results|length) * 100 }}%">
+                                {{ critical_count }} Critical
+                            </div>
+                            {% endif %}
+                            
+                            {% if high_count > 0 %}
+                            <div class="progress-bar bg-warning" style="width: {{ (high_count / results|length) * 100 }}%">
+                                {{ high_count }} High
+                            </div>
+                            {% endif %}
+                            
+                            {% if medium_count > 0 %}
+                            <div class="progress-bar bg-info" style="width: {{ (medium_count / results|length) * 100 }}%">
+                                {{ medium_count }} Medium
+                            </div>
+                            {% endif %}
+                            
+                            {% if low_count > 0 %}
+                            <div class="progress-bar bg-success" style="width: {{ (low_count / results|length) * 100 }}%">
+                                {{ low_count }} Low
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Source Code ({{ language }})
+            </div>
+            <div class="card-body">
+                <pre class="code-block"><code>{{ code }}</code></pre>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Detected Issues
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Line</th>
+                                <th>Severity</th>
+                                <th>Message</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results %}
+                            <tr>
+                                <td>{{ result.line_number }}</td>
+                                <td>
+                                    <span class="severity-badge severity-{{ result.severity }}">
+                                        {{ result.severity }}
+                                    </span>
+                                </td>
+                                <td>{{ result.message }}</td>
+                                <td>
+                                    <a href="/bug/{{ result.id }}" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between">
+            <a href="/analyze-code" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Code Analysis
+            </a>
+            <a href="/dashboard" class="btn btn-primary">
+                Go to Dashboard <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

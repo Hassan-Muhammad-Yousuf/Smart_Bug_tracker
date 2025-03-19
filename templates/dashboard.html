@@ -1,0 +1,292 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h1>Dashboard</h1>
+        <p class="lead">Overview of bugs detected in your codebase</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card dashboard-stat">
+            <div class="number text-primary">{{ stats.total }}</div>
+            <div class="label">Total Bugs</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card dashboard-stat">
+            <div class="number text-danger">{{ stats.critical }}</div>
+            <div class="label">Critical</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card dashboard-stat">
+            <div class="number text-warning">{{ stats.high }}</div>
+            <div class="label">High</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card dashboard-stat">
+            <div class="number text-success">{{ stats.medium + stats.low }}</div>
+            <div class="label">Medium/Low</div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card dashboard-stat">
+            <div class="number text-info">{{ stats.open }}</div>
+            <div class="label">Open</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card dashboard-stat">
+            <div class="number text-primary">{{ stats.in_progress }}</div>
+            <div class="label">In Progress</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card dashboard-stat">
+            <div class="number text-success">{{ stats.fixed }}</div>
+            <div class="label">Fixed</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card dashboard-stat">
+            <div class="number text-secondary">{{ stats.closed }}</div>
+            <div class="label">Closed</div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Bug Severity Distribution
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="severityChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Bug Status Distribution
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Bugs by Language
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="languageChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Critical and High Severity Bugs
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Severity</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bug in recent_bugs if bug.severity in ['critical', 'high'] %}
+                            <tr>
+                                <td>{{ bug.file_path }}</td>
+                                <td>
+                                    <span class="severity-badge severity-{{ bug.severity }}">
+                                        {{ bug.severity }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ bug.status }}</span>
+                                </td>
+                                <td>
+                                    <a href="/bug/{{ bug.id }}" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Recent Bugs
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Line</th>
+                                <th>Type</th>
+                                <th>Severity</th>
+                                <th>Status</th>
+                                <th>Assigned To</th>
+                                <th>Message</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bug in recent_bugs %}
+                            <tr>
+                                <td>{{ bug.file_path }}</td>
+                                <td>{{ bug.line_number }}</td>
+                                <td>{{ bug.type }}</td>
+                                <td>
+                                    <span class="severity-badge severity-{{ bug.severity }}">
+                                        {{ bug.severity }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ bug.status }}</span>
+                                </td>
+                                <td>{{ bug.assigned_to_name or 'Unassigned' }}</td>
+                                <td>{{ bug.message }}</td>
+                                <td>
+                                    <a href="/bug/{{ bug.id }}" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="/bugs" class="btn btn-primary">View All Bugs</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Severity distribution chart
+        const severityCtx = document.getElementById('severityChart').getContext('2d');
+        const severityChart = new Chart(severityCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Critical', 'High', 'Medium', 'Low'],
+                datasets: [{
+                    data: [{{ stats.critical }}, {{ stats.high }}, {{ stats.medium }}, {{ stats.low }}],
+                    backgroundColor: [
+                        '#dc3545',
+                        '#fd7e14',
+                        '#ffc107',
+                        '#28a745'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        });
+
+        // Status distribution chart
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        const statusChart = new Chart(statusCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Open', 'In Progress', 'Fixed', 'Closed'],
+                datasets: [{
+                    data: [{{ stats.open }}, {{ stats.in_progress }}, {{ stats.fixed }}, {{ stats.closed }}],
+                    backgroundColor: [
+                        '#17a2b8',
+                        '#4a6baf',
+                        '#28a745',
+                        '#6c757d'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        });
+
+        // Language distribution chart
+        const languageCtx = document.getElementById('languageChart').getContext('2d');
+        const languageChart = new Chart(languageCtx, {
+            type: 'bar',
+            data: {
+                labels: [{% for lang in lang_dist %}'{{ lang.language }}',{% endfor %}],
+                datasets: [{
+                    label: 'Bugs',
+                    data: [{% for lang in lang_dist %}{{ lang.count }},{% endfor %}],
+                    backgroundColor: '#4a6baf',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
+
